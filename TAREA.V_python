@@ -1,0 +1,37 @@
+from flask import Flask, render_template, request, jsonify
+import random
+import string
+
+app = Flask(__name__)
+
+# Password generator function
+def generate_password(length):
+    if length < 4:
+        return "Password length must be at least 4"
+    all_chars = string.ascii_letters + string.digits + string.punctuation
+    password = [
+        random.choice(string.ascii_lowercase),
+        random.choice(string.ascii_uppercase),
+        random.choice(string.digits),
+        random.choice(string.punctuation)
+    ]
+    password += random.choices(all_chars, k=length-4)
+    random.shuffle(password)
+    return ''.join(password)
+
+# Serve HTML page
+@app.route('/')
+def home():
+    return render_template('index.html')
+
+# Generate password API
+@app.route('/generate', methods=['POST'])
+def generate():
+    data = request.get_json()
+    length = int(data.get('length', 12))
+    password = generate_password(length)
+    return jsonify({'password': password})
+
+if __name__ == "__main__":
+    app.run(debug=True)
+# API POR FIN SIIII
